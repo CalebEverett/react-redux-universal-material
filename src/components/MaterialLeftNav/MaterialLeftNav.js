@@ -1,13 +1,15 @@
 /** In this file, we create a React component which incorporates components provided by material-ui */
 
 import React, { Component, PropTypes } from 'react';
-import LeftNav from 'material-ui/lib/left-nav';
 import AppBar from 'material-ui/lib/app-bar';
+import LeftNav from 'material-ui/lib/left-nav';
+import MenuItem from 'material-ui/lib/menus/menu-item';
 
 export default class MaterialLeftNav extends Component {
   static propTypes = {
     browser: PropTypes.object,
-    path: PropTypes.string
+    path: PropTypes.string,
+    menuItems: PropTypes.array
   }
 
   static contextTypes = {
@@ -15,10 +17,10 @@ export default class MaterialLeftNav extends Component {
     spTheme: PropTypes.object
   }
 
-  _handleLeftNavChange(event, selectedIndex, menuItem) {
+  _handleLeftNavChange(i) {
+    console.log(this.props);
     const {history} = this.context;
-    history.pushState(null, menuItem.route);
-    this.refs.leftNav.toggle();
+    history.pushState(null, this.props.menuItems[i].value);
   }
 
   _toggleLeftNav() {
@@ -28,17 +30,6 @@ export default class MaterialLeftNav extends Component {
   render() {
     const styles = require('./MaterialLeftNav.scss');
     const path = (!this.props.path) ? 'Home' : this.props.path;
-    const {palette} = this.context.spTheme;
-    const divColor = palette.primary3Color;
-    const leftNavHeader = (
-      <div style={{backgroundColor: divColor, height: '12em'}}>Niko</div>
-    );
-
-    const menuItems = [
-      {key: 0, text: 'Survey', route: '/survey'},
-      {key: 1, text: 'Widgets', route: '/widgets'},
-      {key: 2, text: 'Home', route: '/'}
-    ];
 
     return (
       <div className={styles}>
@@ -46,13 +37,12 @@ export default class MaterialLeftNav extends Component {
           title={path}
           onLeftIconButtonTouchTap={::this._toggleLeftNav}
         />
-        <LeftNav
-          ref="leftNav"
-          menuItems={menuItems}
-          onChange={::this._handleLeftNavChange}
-          docked={this.props.browser.greaterThan.medium}
-          header={leftNavHeader}
-        />
+        <LeftNav ref="leftNav" docked={false} >
+          {this.props.menuItems.map( (menuitem, i) => {
+            return ( <MenuItem key={i} index={i} primaryText={menuitem.text} value={menuitem.value} onTouchTap={::this._handleLeftNavChange.bind(this, i)}/>
+              );
+          }, this) };
+        </LeftNav>
       </div>
     );
   }
