@@ -18,30 +18,39 @@ export default class MaterialLeftNav extends Component {
   }
 
   _handleLeftNavChange(i) {
-    console.log(this.props);
+    console.log(this.props.menuItems[i].value);
     const {history} = this.context;
     history.pushState(null, this.props.menuItems[i].value);
+    this.refs.leftNavChildren.toggle();
   }
 
   _toggleLeftNav() {
-    this.refs.leftNav.toggle();
+    console.log(this.props);
+    this.refs.leftNavChildren.toggle();
   }
 
   render() {
     const styles = require('./MaterialLeftNav.scss');
     const path = (!this.props.path) ? 'Home' : this.props.path;
+    const navHeaderImage = require('./niko-250.png');
+    const palette = this.context.spTheme;
+    const navHeader = (
+      <div className={styles.navHeader} color={palette.accent2Color}>
+        <img src={navHeaderImage}/>
+      </div>
+      );
 
     return (
-      <div className={styles}>
-        <AppBar
+      <div>
+        <AppBar className={styles.AppBar}
           title={path}
           onLeftIconButtonTouchTap={::this._toggleLeftNav}
         />
-        <LeftNav ref="leftNav" docked={false} >
+        <LeftNav ref="leftNavChildren" docked header={navHeader}>
           {this.props.menuItems.map( (menuitem, i) => {
             return ( <MenuItem key={i} index={i} primaryText={menuitem.text} value={menuitem.value} onTouchTap={::this._handleLeftNavChange.bind(this, i)}/>
               );
-          }, this) };
+          }, this) }
         </LeftNav>
       </div>
     );
