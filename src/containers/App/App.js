@@ -7,7 +7,6 @@ import { isLoaded as isAuthLoaded, load as loadAuth, logout } from 'redux/module
 import { InfoBar } from 'components';
 import { pushState } from 'redux-router';
 import config from '../../config';
-import { Button } from 'react-toolbox';
 
 const NavbarLink = ({to, className, component, children}) => {
   const Comp = component || Link;
@@ -98,7 +97,6 @@ export default class App extends Component {
           {this.props.children}
         </div>
         <InfoBar/>
-        <Button label="Hello world" kind="raised" accent />
 
         <div className="well text-center">
           Have questions? Ask for help <a
