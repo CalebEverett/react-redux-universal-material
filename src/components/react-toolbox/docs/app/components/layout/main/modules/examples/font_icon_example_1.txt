@@ -1,9 +1,0 @@
-const FontIcons = () => (
-  <span>
-    <FontIcon value='add' />
-    <FontIcon value='favorite' />
-    <FontIcon value='star' />
-  </span>
-);
-
-return <FontIcons />;
