@@ -7,7 +7,7 @@ import { isLoaded as isAuthLoaded, load as loadAuth, logout } from 'redux/module
 import { InfoBar } from 'components';
 import { pushState } from 'redux-router';
 import config from '../../config';
-import Button from '../../components/react-toolbox/lib/button';
+import { Button } from 'react-toolbox';
 
 const NavbarLink = ({to, className, component, children}) => {
   const Comp = component || Link;
