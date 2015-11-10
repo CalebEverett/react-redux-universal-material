@@ -33,21 +33,26 @@ export default class MaterialLeftNav extends Component {
     const styles = require('./MaterialLeftNav.scss');
     const path = (!this.props.path) ? 'Home' : this.props.path;
     const navHeaderImage = require('./niko-250.png');
-    const palette = this.context.spTheme;
     const navHeader = (
-      <div className={styles.navHeader} color={palette.accent2Color}>
+      <div className={styles.navHeader} >
         <img src={navHeaderImage}/>
       </div>
       );
 
+    const menuItems = [
+      {key: 0, text: 'Survey', route: '/survey'},
+      {key: 1, text: 'Widgets', route: '/widgets'},
+      {key: 2, text: 'Home', route: '/'}
+    ];
+
     return (
       <div>
-        <AppBar className={styles.AppBar}
+        <AppBar className={styles.appBar}
           title={path}
           onLeftIconButtonTouchTap={::this._toggleLeftNav}
         />
-        <LeftNav ref="leftNavChildren" docked header={navHeader}>
-          {this.props.menuItems.map( (menuitem, i) => {
+        <LeftNav ref="leftNavChildren" header={navHeader}>
+          {menuItems.map( (menuitem, i) => {
             return ( <MenuItem key={i} index={i} primaryText={menuitem.text} value={menuitem.value} onTouchTap={::this._handleLeftNavChange.bind(this, i)}/>
               );
           }, this) }
