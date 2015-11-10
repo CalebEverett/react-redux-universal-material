@@ -28,11 +28,11 @@ export default class App extends Component {
   };
 
   static contextTypes = {
-    history: PropTypes.object
+    history: PropTypes.object,
+    spTheme: PropTypes.object
   }
 
   static childContextTypes = {
-    history: PropTypes.object,
     spTheme: PropTypes.object
   }
 
@@ -48,6 +48,17 @@ export default class App extends Component {
       // logout
       this.props.pushState(null, '/');
     }
+  }
+
+  getInLineStyles() {
+    const inLineStyles = {
+      materialLeftNav: {
+        position: 'fixed',
+        top: 0,
+        left: 0
+      }
+    };
+    return inLineStyles;
   }
 
   static fetchData(getState, dispatch) {
@@ -67,6 +78,7 @@ export default class App extends Component {
   }
 
   render() {
+    const inLineStyles = this.getInLineStyles();
     const styles = require('./App.scss');
     const {browser, path} = this.props;
     const message = `The viewport's current media type is: ${browser.mediaType}.`;
@@ -79,8 +91,8 @@ export default class App extends Component {
     return (
       <div className={styles.app}>
         <DocumentMeta {...config.app}/>
-        <div className={styles.appContent}>
-          <MaterialLeftNav menuItems={menuItems} browser={browser} path={path} />
+        <div className={styles.appContent} style={inLineStyles.app}>
+          <MaterialLeftNav classNamne={styles.materialLeftNav} menuItems={menuItems} browser={browser} path={path} />
           <p>
             {message}
           </p>
