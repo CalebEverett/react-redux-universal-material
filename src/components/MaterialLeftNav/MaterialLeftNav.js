@@ -6,8 +6,11 @@ import LeftNav from 'material-ui/lib/left-nav';
 import Avatar from 'material-ui/lib/avatar';
 import AppCanvas from 'material-ui/lib/app-canvas';
 import MenuItem from 'material-ui/lib/menus/menu-item';
+const ThemeManager = require('material-ui/lib/styles/theme-manager');
+const themeDecorator = require('material-ui/lib/styles/theme-decorator');
+const spTheme = require('../../theme/sptheme.js');
 
-
+@themeDecorator(ThemeManager.getMuiTheme(spTheme))
 export default class MaterialLeftNav extends Component {
   static propTypes = {
     browser: PropTypes.object,

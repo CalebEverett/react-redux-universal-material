@@ -1,14 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { IndexLink } from 'react-router';
-import { LinkContainer } from 'react-router-bootstrap';
-import { Navbar, NavBrand, Nav, NavItem, CollapsibleNav } from 'react-bootstrap';
 import DocumentMeta from 'react-document-meta';
 import { isLoaded as isInfoLoaded, load as loadInfo } from 'redux/modules/info';
 import { isLoaded as isAuthLoaded, load as loadAuth, logout } from 'redux/modules/auth';
 import { InfoBar, Test, MaterialLeftNav } from 'components';
 import { pushState } from 'redux-router';
-import connectData from 'helpers/connectData';
 import config from '../../config';
 const ThemeManager = require('material-ui/lib/styles/theme-manager');
 const themeDecorator = require('material-ui/lib/styles/theme-decorator');
@@ -17,19 +13,7 @@ const spTheme = require('../../theme/sptheme.js');
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
 
-function fetchData(getState, dispatch) {
-  const promises = [];
-  if (!isInfoLoaded(getState())) {
-    promises.push(dispatch(loadInfo()));
-  }
-  if (!isAuthLoaded(getState())) {
-    promises.push(dispatch(loadAuth()));
-  }
-  return Promise.all(promises);
-}
-
 @themeDecorator(ThemeManager.getMuiTheme(spTheme))
-@connectData(fetchData)
 @connect(
   state => ({user: state.auth.user, browser: state.browser, path: state.router.routes[1].path }),
   {logout, pushState})
@@ -75,6 +59,17 @@ export default class App extends Component {
       }
     };
     return inLineStyles;
+  }
+
+  static fetchData(getState, dispatch) {
+    const promises = [];
+    if (!isInfoLoaded(getState())) {
+      promises.push(dispatch(loadInfo()));
+    }
+    if (!isAuthLoaded(getState())) {
+      promises.push(dispatch(loadAuth()));
+    }
+    return Promise.all(promises);
   }
 
   handleLogout(event) {
