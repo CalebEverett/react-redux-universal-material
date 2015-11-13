@@ -36,7 +36,7 @@ export default class FullWidthSection extends Component {
   }
 
   static getDefaultProps = {
-    useContent: true,
+    useContent: false,
     contentType: 'div'
   }
 
