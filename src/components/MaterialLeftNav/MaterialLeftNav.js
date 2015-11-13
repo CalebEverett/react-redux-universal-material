@@ -6,6 +6,7 @@ import LeftNav from 'material-ui/lib/left-nav';
 import Avatar from 'material-ui/lib/avatar';
 import AppCanvas from 'material-ui/lib/app-canvas';
 import MenuItem from 'material-ui/lib/menus/menu-item';
+import Paper from 'material-ui/lib/paper';
 const ThemeManager = require('material-ui/lib/styles/theme-manager');
 const themeDecorator = require('material-ui/lib/styles/theme-decorator');
 const spTheme = require('../../theme/sptheme.js');
@@ -47,26 +48,26 @@ export default class MaterialLeftNav extends Component {
     this.refs.leftNavChildren.toggle();
   }
 
-  _toggleLeftNav() {
-    this.refs.leftNavChildren.toggle();
-  }
-
   render() {
     const inLineStyles = this.getInLineStyles();
     const path = (!this.props.path) ? 'Home' : (this.props.path.substr(0, 1).toUpperCase() + this.props.path.slice(1));
     const navHeaderImage = require('./niko-250.png');
     const navHeader = (
-      <div style={inLineStyles.navHeader}>
+      <Paper style={inLineStyles.navHeader} zDepth={0}>
         <Avatar src={navHeaderImage} size={100} style={inLineStyles.avatar} />
         <div>Niko Everett</div>
         <a href="mailto:niko@nikoeverett.com">niko@nikoeverett.com</a>
-      </div>
+      </Paper>
     );
+
+    const toggleLeftNav = () => {
+      this.refs.leftNavChildren.toggle();
+    }
 
     return (
       <div>
         <AppCanvas style={inLineStyles.none}>
-          <AppBar title={path} onLeftIconButtonTouchTap={::this._toggleLeftNav} />
+          <AppBar title={path} onLeftIconButtonTouchTap={toggleLeftNav} />
         </AppCanvas>
         <LeftNav ref="leftNavChildren" docked={false} header={navHeader}>
           {this.props.menuItems.map( (menuitem, i) => {

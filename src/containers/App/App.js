@@ -1,18 +1,25 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { IndexLink } from 'react-router';
-import { LinkContainer } from 'react-router-bootstrap';
-import { Navbar, NavBrand, Nav, NavItem, CollapsibleNav } from 'react-bootstrap';
 import DocumentMeta from 'react-document-meta';
 import { isLoaded as isInfoLoaded, load as loadInfo } from 'redux/modules/info';
 import { isLoaded as isAuthLoaded, load as loadAuth, logout } from 'redux/modules/auth';
-import { InfoBar, Test, MaterialLeftNav } from 'components';
 import { pushState } from 'redux-router';
 import connectData from 'helpers/connectData';
 import config from '../../config';
-const ThemeManager = require('material-ui/lib/styles/theme-manager');
-const themeDecorator = require('material-ui/lib/styles/theme-decorator');
-const spTheme = require('../../theme/sptheme.js');
+import { AppBar,
+      AppCanvas,
+      IconButton,
+      EnhancedButton,
+      Mixins,
+      Styles,
+      Tab,
+      Tabs,
+      Paper} from 'material-ui';
+import { FullWidthSection } from 'components';
+import ThemeManager from 'material-ui/lib/styles/theme-manager';
+import spTheme from '../../theme/sptheme.js';
+const { StylePropable } = Mixins;
+const { Colors, Spacing, Typography } = Styles;
 
 import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
@@ -28,35 +35,57 @@ function fetchData(getState, dispatch) {
   return Promise.all(promises);
 }
 
-@themeDecorator(ThemeManager.getMuiTheme(spTheme))
 @connectData(fetchData)
 @connect(
-  state => ({user: state.auth.user, browser: state.browser, path: state.router.routes[1].path }),
-  {logout, pushState})
+  state => ({user: state.auth.user }), {logout, pushState})
 export default class App extends Component {
   static propTypes = {
     children: PropTypes.object.isRequired,
     user: PropTypes.object,
     logout: PropTypes.func.isRequired,
     pushState: PropTypes.func.isRequired,
-    browser: PropTypes.object,
-    path: PropTypes.string
+    history: PropTypes.object
   };
 
   static contextTypes = {
-    history: PropTypes.object,
-    spTheme: PropTypes.object
-  }
+    muiTheme: PropTypes.object
+  };
 
   static childContextTypes = {
-    spTheme: PropTypes.object
+    muiTheme: PropTypes.object,
+  };
+
+  constructor() {
+    super();
+    const muiTheme = ThemeManager.getMuiTheme(spTheme);
+    this.state = {muiTheme};
   }
 
   getChildContext() {
-    return {spTheme: spTheme};
+    return {
+      muiTheme: this.state.muiTheme,
+    };
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidMount() {
+    const newMuiTheme = this.state.muiTheme;
+    newMuiTheme.inkBar.backgroundColor = Colors.yellow200;
+    this.setState({
+      muiTheme: newMuiTheme,
+      tabIndex: this._getSelectedIndex()});
+    const setTabsState = () => {
+      this.setState({renderTabs: !(global.document.body.clientWidth <= 647)});
+    };
+    setTabsState();
+    window.onresize = setTabsState;
+  }
+
+  componentWillReceiveProps(nextProps, nextContext) {
+    const newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({
+      tabIndex: this._getSelectedIndex(),
+      muiTheme: newMuiTheme,
+    });
     if (!this.props.user && nextProps.user) {
       // login
       this.props.pushState(null, '/loginSuccess');
@@ -66,15 +95,33 @@ export default class App extends Component {
     }
   }
 
-  getInLineStyles() {
-    const inLineStyles = {
-      materialLeftNav: {
+  getStyles() {
+    const darkWhite = Colors.darkWhite;
+    return {
+      footer: {
+        backgroundColor: Colors.grey900,
+        textAlign: 'center',
+      },
+      a: {
+        color: darkWhite,
+      },
+      p: {
+        margin: '0 auto',
+        padding: 0,
+        color: Colors.lightWhite,
+        maxWidth: 335,
+      },
+      github: {
         position: 'fixed',
-        top: 0,
-        left: 0
-      }
+        right: Spacing.desktopGutter / 2,
+        top: 8,
+        zIndex: 5,
+        color: 'white',
+      },
+      iconButton: {
+        color: darkWhite,
+      },
     };
-    return inLineStyles;
   }
 
   handleLogout(event) {
@@ -82,36 +129,153 @@ export default class App extends Component {
     this.props.logout();
   }
 
-  render() {
-    const inLineStyles = this.getInLineStyles();
-    const styles = require('./App.scss');
-    const {browser, path} = this.props;
-    const message = `The viewport's current media type is: ${browser.mediaType}.`;
-    const menuItems = [
-      {text: 'Survey', value: '/survey'},
-      {text: 'Widgets', value: '/widgets'},
-      {text: 'Home', value: '/'}
-    ];
+  _onLeftIconButtonTouchTap() {
+    this.refs.leftNav.toggle();
+  }
+
+  _getSelectedIndex() {
+    return this.props.history.isActive('/get-started') ? '1' :
+      this.props.history.isActive('/customization') ? '2' :
+      this.props.history.isActive('/components') ? '3' : '0';
+  }
+
+  _handleTabChange(value, e, tab) {
+    this.props.history.pushState(null, tab.props.route);
+    this.setState({tabIndex: this._getSelectedIndex()});
+  }
+
+  _getAppBar() {
+    const title =
+      this.props.history.isActive('/get-started') ? 'Get Started' :
+      this.props.history.isActive('/customization') ? 'Customization' :
+      this.props.history.isActive('/components') ? 'Components' : '';
+
+    const githubButton = (
+      <IconButton
+        iconClassName="muidocs-icon-custom-github"
+        href="https://github.com/callemall/material-ui"
+        linkButton />
+    );
 
     return (
-      <div className={styles.app}>
-        <DocumentMeta {...config.app}/>
-        <div className={styles.appContent} style={inLineStyles.app}>
-          <MaterialLeftNav classNamne={styles.materialLeftNav} menuItems={menuItems} browser={browser} path={path} />
-          <p>
-            {message}
-          </p>
-          {this.props.children}
-        </div>
-        <Test/>
-        <InfoBar/>
+      <div>
+        <AppBar
+          onLeftIconButtonTouchTap={this._onLeftIconButtonTouchTap}
+          title={title}
+          zDepth={0}
+          iconElementRight={githubButton}
+          style={{position: 'absolute', top: 0}}/>
+      </div>
+    );
+  }
 
-        <div className="well text-center">
-          Have questions? Ask for help <a
-          href="https://github.com/erikras/react-redux-universal-hot-example/issues"
-          target="_blank">on Github</a> or in the <a
-          href="https://discordapp.com/channels/102860784329052160/105739309289623552" target="_blank">#react-redux-universal</a> Discord channel.
-        </div>
+  _getTabs() {
+    const prepareStyles = StylePropable.prepareStyles.bind(this);
+    const styles = {
+      root: {
+        backgroundColor: Colors.cyan500,
+        position: 'fixed',
+        height: 64,
+        top: 0,
+        right: 0,
+        zIndex: 4,
+        width: '100%',
+      },
+      container: {
+        position: 'absolute',
+        right: (Spacing.desktopGutter / 2) + 48,
+        bottom: 0,
+      },
+      span: {
+        color: Colors.white,
+        fontWeight: Typography.fontWeightLight,
+        left: 45,
+        top: 22,
+        position: 'absolute',
+        fontSize: 26,
+      },
+      svgLogoContainer: {
+        position: 'fixed',
+        width: 300,
+        left: Spacing.desktopGutter,
+      },
+      svgLogo: {
+        width: 65,
+        backgroundColor: Colors.cyan500,
+        position: 'absolute',
+        top: 20,
+      },
+      tabs: {
+        width: 425,
+        bottom: 0,
+      },
+      tab: {
+        height: 64,
+      },
+    };
+
+    const materialIcon = this.state.tabIndex !== '0' ? (
+      <EnhancedButton
+        style={styles.svgLogoContainer}
+        linkButton
+        href="/#/home">
+        <img style={prepareStyles(styles.svgLogo)} src="images/material-ui-logo.svg"/>
+        <span style={prepareStyles(styles.span)}>material ui</span>
+      </EnhancedButton>) : null;
+
+    return (
+      <div>
+        <Paper
+          zDepth={0}
+          rounded={false}
+          style={styles.root}>
+          {materialIcon}
+          <div style={prepareStyles(styles.container)}>
+            <Tabs
+              style={styles.tabs}
+              value={this.state.tabIndex}
+              onChange={this._handleTabChange}>
+              <Tab
+                value="1"
+                label="GETTING STARTED"
+                style={styles.tab}
+                route="/get-started" />
+              <Tab
+                value="2"
+                label="CUSTOMIZATION"
+                style={styles.tab}
+                route="/customization"/>
+              <Tab
+                value="3"
+                label="COMPONENTS"
+                style={styles.tab}
+                route="/components"/>
+            </Tabs>
+          </div>
+        </Paper>
+      </div>
+    );
+  }
+
+  render() {
+    const styles = this.getStyles();
+    const style = require('./App.scss');
+    const prepareStyles = StylePropable.prepareStyles.bind(this);
+
+    return (
+      <div className={style.app}>
+        <DocumentMeta {...config.app}/>
+        <AppCanvas>
+          {this.state.renderTabs ? this._getTabs() : this._getAppBar()}
+
+          {this.props.children}
+          <FullWidthSection style={styles.footer}>
+            <p style={prepareStyles(styles.p)}>
+              Hand crafted with love by the engineers at <a style={styles.a} href="http://call-em-all.com">Call-Em-All</a> and our
+              awesome <a style={prepareStyles(styles.a)} href="https://github.com/callemall/material-ui/graphs/contributors">contributors</a>.
+            </p>
+          </FullWidthSection>
+        </AppCanvas>
       </div>
     );
   }
