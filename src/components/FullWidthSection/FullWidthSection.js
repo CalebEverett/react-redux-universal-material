@@ -7,20 +7,20 @@ const DesktopGutter = Styles.Spacing.desktopGutter;
 const getStyles = () => {
   return {
     root: {
-      padding: DesktopGutter,
+      padding: DesktopGutter + 'px',
       boxSizing: 'border-box',
     },
     content: {
-      maxWidth: 1200,
+      maxWidth: '1200px',
       margin: '0 auto',
     },
     rootWhenSmall: {
-      paddingTop: (DesktopGutter * 2),
-      paddingBottom: (DesktopGutter * 2),
+      paddingTop: (DesktopGutter * 2) + 'px',
+      paddingBottom: (DesktopGutter * 2) + 'px',
     },
     rootWhenLarge: {
-      paddingTop: (DesktopGutter * 3),
-      paddingBottom: (DesktopGutter * 3),
+      paddingTop: (DesktopGutter * 3) + 'px',
+      paddingBottom: (DesktopGutter * 3) + 'px',
     },
   };
 };
@@ -31,8 +31,6 @@ export default class FullWidthSection extends Component {
     useContent: PropTypes.bool,
     contentType: PropTypes.string,
     contentStyle: PropTypes.object,
-    style: PropTypes.object,
-    children: PropTypes.object,
     isDeviceSize: PropTypes.func
   };
 
@@ -54,14 +52,19 @@ export default class FullWidthSection extends Component {
     const styles = getStyles();
     const mergeAndPrefix = StylePropable.mergeAndPrefix.bind(this);
 
-    console.log(StylePropable);
-    const content =
-      useContent
-      ? React.createElement(
+    let content;
+    if (useContent) {
+      content =
+        React.createElement(
           contentType,
-          {...other},
+          {style: this.mergeAndPrefix(styles.content, contentStyle)},
           this.props.children
-        ) : this.props.children;
+        );
+    } else {
+      content = this.props.children;
+    }
+
+    console.log();
 
     return (
       <ClearFix {...other}

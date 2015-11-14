@@ -140,6 +140,7 @@ export default class App extends Component {
   }
 
   _getAppBar() {
+    console.log(this.state.renderTabs);
     const title =
       this.props.history.isActive('/home') ? 'Home' :
       this.props.history.isActive('/survey') ? 'Survey' :
@@ -267,11 +268,8 @@ export default class App extends Component {
           {this.state.renderTabs ? this._getTabs() : this._getAppBar()}
 
           {this.props.children}
-          <FullWidthSection style={styles.footer} >
-            <p style={prepareStyles(styles.p)}>
-              Hand crafted with love by the engineers at <a style={styles.a} href="http://call-em-all.com">Call-Em-All</a> and our
-              awesome <a style={prepareStyles(styles.a)} href="https://github.com/callemall/material-ui/graphs/contributors">contributors</a>.
-            </p>
+          <FullWidthSection style={styles.footer}>
+            Hello
           </FullWidthSection>
         </AppCanvas>
       </div>
