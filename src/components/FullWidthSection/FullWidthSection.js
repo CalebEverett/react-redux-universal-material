@@ -33,12 +33,13 @@ export default class FullWidthSection extends Component {
     contentStyle: PropTypes.object,
     style: PropTypes.object,
     children: PropTypes.object,
-  }
+    isDeviceSize: PropTypes.func
+  };
 
-  static getDefaultProps = {
-    useContent: true,
+  static defaultProps = {
+    useContent: false,
     contentType: 'div'
-  }
+  };
 
   render() {
     const {
@@ -53,16 +54,15 @@ export default class FullWidthSection extends Component {
     const styles = getStyles();
     const mergeAndPrefix = StylePropable.mergeAndPrefix.bind(this);
 
-    const ContentType = contentType;
+    console.log(StylePropable);
     const content =
       useContent
-      ? (
-        <ContentType style={mergeAndPrefix(styles.content, contentStyle)}>
-          {this.props.children}
-        </ContentType>
-      ) : this.props.children;
+      ? React.createElement(
+          contentType,
+          {...other},
+          this.props.children
+        ) : this.props.children;
 
-    console.log(content);
     return (
       <ClearFix {...other}
         style={mergeAndPrefix(

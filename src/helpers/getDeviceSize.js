@@ -17,6 +17,16 @@ const DeviceSizeComponent = WrapComponent =>
       };
     }
 
+    static childContextTypes = {
+      muiTheme: React.PropTypes.object,
+    };
+
+    getChildContext() {
+      return {
+        muiTheme: this.state.muiTheme,
+      };
+    }
+
     componentDidMount() {
       const updateDeviceSize = () => {
         var width = window.innerWidth;

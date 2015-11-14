@@ -134,21 +134,16 @@ export default class App extends Component {
   }
 
   _getSelectedIndex() {
-    return this.props.history.isActive('/get-started') ? '1' :
-      this.props.history.isActive('/customization') ? '2' :
-      this.props.history.isActive('/components') ? '3' : '0';
-  }
-
-  _handleTabChange(value, e, tab) {
-    this.props.history.pushState(null, tab.props.route);
-    this.setState({tabIndex: this._getSelectedIndex()});
+    return this.props.history.isActive('/home') ? '1' :
+      this.props.history.isActive('/survey') ? '2' :
+      this.props.history.isActive('/widgets') ? '3' : '0';
   }
 
   _getAppBar() {
     const title =
-      this.props.history.isActive('/get-started') ? 'Get Started' :
-      this.props.history.isActive('/customization') ? 'Customization' :
-      this.props.history.isActive('/components') ? 'Components' : '';
+      this.props.history.isActive('/home') ? 'Home' :
+      this.props.history.isActive('/survey') ? 'Survey' :
+      this.props.history.isActive('/widgets') ? 'Widgets' : '';
 
     const githubButton = (
       <IconButton
@@ -223,6 +218,11 @@ export default class App extends Component {
         <span style={prepareStyles(styles.span)}>material ui</span>
       </EnhancedButton>) : null;
 
+    const handleTabChange = (value, e, tab) => {
+      this.props.history.pushState(null, tab.props.route);
+      this.setState({tabIndex: this._getSelectedIndex()});
+    };
+
     return (
       <div>
         <Paper
@@ -234,22 +234,22 @@ export default class App extends Component {
             <Tabs
               style={styles.tabs}
               value={this.state.tabIndex}
-              onChange={this._handleTabChange}>
+              onChange={handleTabChange}>
               <Tab
                 value="1"
-                label="GETTING STARTED"
+                label="HOME"
                 style={styles.tab}
-                route="/get-started" />
+                route="/" />
               <Tab
                 value="2"
-                label="CUSTOMIZATION"
+                label="SURVEY"
                 style={styles.tab}
-                route="/customization"/>
+                route="/survey"/>
               <Tab
                 value="3"
-                label="COMPONENTS"
+                label="WIDGETS"
                 style={styles.tab}
-                route="/components"/>
+                route="/widgets"/>
             </Tabs>
           </div>
         </Paper>
@@ -259,17 +259,15 @@ export default class App extends Component {
 
   render() {
     const styles = this.getStyles();
-    const style = require('./App.scss');
     const prepareStyles = StylePropable.prepareStyles.bind(this);
-
     return (
-      <div className={style.app}>
+      <div>
         <DocumentMeta {...config.app}/>
         <AppCanvas>
           {this.state.renderTabs ? this._getTabs() : this._getAppBar()}
 
           {this.props.children}
-          <FullWidthSection style={styles.footer}>
+          <FullWidthSection style={styles.footer} >
             <p style={prepareStyles(styles.p)}>
               Hand crafted with love by the engineers at <a style={styles.a} href="http://call-em-all.com">Call-Em-All</a> and our
               awesome <a style={prepareStyles(styles.a)} href="https://github.com/callemall/material-ui/graphs/contributors">contributors</a>.
